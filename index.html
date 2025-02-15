@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sua plataforma de mangás online">
+    <meta name="theme-color" content="#000000">
+    <title>Home</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/posicoes-da-index.css">
+    <link rel="stylesheet" href="css/biblioteca.css">
+    <link rel="stylesheet" href="css/recent-donghuas.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="preconnect" href="https://source.unsplash.com">
+    <style>
+        body, html {
+            background-color: black !important;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: white; /* Ensure text is visible on black background */
+        }
+        
+        .obra-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .obra-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        #donghuaDetailsModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .donghua-details-content {
+            background-color: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            padding: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+
+        .donghua-details-content.show {
+            transform: translateY(0);
+        }
+
+        .donghua-details-content .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .donghua-details-content img {
+            max-width: 300px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .donghua-details-content .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .status-novo { background-color: #ff6b6b; color: white; }
+        .status-em-andamento { background-color: #4ecdc4; color: white; }
+        .status-completo { background-color: #45b7d1; color: white; }
+
+        /* Updated Featured Section Styles */
+        .featured-grid {
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+            position: relative; /* Ensure absolute positioning of crown works correctly */
+        }
+
+        .obra-card {
+            flex: 0 0 calc(33.333% - 20px);
+            max-width: 280px;
+            border: 3px solid #6a0dad; /* Vibrant purple border */
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #1a1a1a;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            height: 380px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .obra-card::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #6a0dad, #9932cc);
+            z-index: -1;
+            border-radius: 12px;
+            opacity: 0.7;
+        }
+
+        .obra-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(106, 13, 173, 0.3);
+        }
+
+        .obra-card .obra-image {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .obra-card .obra-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .obra-card .obra-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: white;
+            z-index: 10;
+        }
+
+        .obra-card .obra-ranking {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(
+                45deg, 
+                #ff6b6b,   /* Vibrant red */
+                #4ecdc4,   /* Teal */
+                #45b7d1,   /* Blue */
+                #f9d56e    /* Yellow */
+            );
+            background-size: 400% 400%;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1em;
+            z-index: 10;
+            box-shadow: 
+                0 4px 6px rgba(0,0,0,0.2),
+                0 0 15px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            border: 2px solid rgba(255,255,255,0.2);
+            transform: skew(-10deg);
+            animation: 
+                gradient-shift 10s ease infinite,
+                number-pulse 3s ease-in-out infinite alternate;
+            background-clip: text;
+            -webkit-background-clip: text;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes number-pulse {
+            0%, 100% {
+                transform: skew(-10deg) scale(1);
+            }
+            50% {
+                transform: skew(-10deg) scale(1.05);
+            }
+        }
+
+        .obra-ranking::before {
+            content: '#';
+            margin-right: 3px;
+            opacity: 0.7;
+            font-weight: normal;
+        }
+
+        .obra-ranking:hover {
+            transform: skew(-10deg) scale(1.1);
+            box-shadow: 
+                0 6px 8px rgba(0,0,0,0.3),
+                0 0 20px rgba(0,0,0,0.6);
+        }
+
+        .obra-card .obra-details {
+            padding: 10px 15px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: calc(100% - 200px);
+        }
+
+        .obra-card .obra-details h3 {
+            margin-bottom: 5px;
+            font-size: 1em;
+            line-height: 1.2;
+        }
+
+        .obra-card .obra-details p {
+            color: #aaa;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
+            display: -moz-box;
+            -moz-line-clamp: 2;
+            -moz-box-orient: vertical;
+        }
+
+        .obra-card .obra-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+        }
+
+        .obra-card .obra-type {
+            background-color: rgba(255,255,255,0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .obra-card .obra-rating {
+            display: flex;
+            align-items: center;
+            color: #ffc107;
+            font-size: 0.9em;
+        }
+
+        .obra-card .obra-rating i {
+            margin-right: 3px;
+            font-size: 0.9em;
+        }
+
+        /* Carousel Styles */
+        .featured-grid {
+            display: flex;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            position: relative;
+            width: 100%;
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .featured-carousel-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 10px;
+            z-index: 10;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .carousel-control:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* Carousel Dots Styles */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .carousel-dot::before {
+            content: '°';
+        }
+
+        .carousel-dot.active {
+            background-color: #ff6b00;
+            width: 12px;
+            height: 12px;
+            box-shadow: 0 0 5px rgba(255,107,0,0.5);
+            color: white;
+        }
+
+        .carousel-dot.active::before {
+            content: '°';
+        }
+
+        /* Animated Crown Styles */
+        @keyframes crown-float {
+            0%, 100% { 
+                transform: translateY(0) rotate(-5deg);
+            }
+            25% { 
+                transform: translateY(-10px) rotate(5deg);
+            }
+            50% { 
+                transform: translateY(5px) rotate(-3deg);
+            }
+            75% { 
+                transform: translateY(-5px) rotate(3deg);
+            }
+        }
+
+        @keyframes crown-color-shift {
+            0%, 100% { 
+                color: gold;
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            }
+            25% { 
+                color: #FFD700;
+                text-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
+            }
+            50% { 
+                color: #FFA500;
+                text-shadow: 0 0 20px rgba(255, 140, 0, 0.9);
+            }
+            75% { 
+                color: #FF8C00;
+                text-shadow: 0 0 25px rgba(255, 69, 0, 1);
+            }
+        }
+
+        .obra-crown {
+            position: absolute;
+            top: 30px;
+            left: 10px;
+            font-size: 40px;
+            animation: 
+                crown-float 3s ease-in-out infinite,
+                crown-color-shift 5s infinite alternate;
+            transform-origin: center;
+            z-index: 2;
+        }
+
+        .obra-card[data-ranking="1"] {
+            border-color: gold;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-black" style="background-color: black !important;">
+    <!-- Menu Button -->
+    <button id="menuBtn" class="menu-btn" aria-label="Abrir menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <!-- Sidebar Menu -->
+    <nav id="sidebar" class="sidebar" aria-label="Menu principal">
+        <button id="closeBtn" class="close-btn" aria-label="Fechar menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <div class="sidebar-content">
+            <a href="index.html" class="sidebar-item" data-section="home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Home</span>
+            </a>
+            <a href="biblioteca.html" class="sidebar-item" data-section="library">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                <span>Biblioteca</span>
+            </a>
+            <a href="perfil.html" class="sidebar-item" data-section="profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Perfil</span>
+            </a>
+            <a href="login.html" class="sidebar-item" data-section="account">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                <span>Conta</span>
+            </a>
+            <a href="#config" class="sidebar-item" data-section="config">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><path d="M12 9v2m0 4h.01"></path></svg>
+                <span>Config do Site</span>
+            </a>
+            <a href="#" class="sidebar-item" data-section="resolution" id="changeResolutionLink">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span>Alterar Resolução</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="site-header">
+            <div class="logo-container">
+                <h1 class="site-title">SOMDONG</h1>
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animated-icon">
+                        <path d="M12 2L2 7l10 5 10-5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <div class="layout-image-container">
+            <img src="imagem/leyauth.webp" alt="Layout Image" class="layout-image">
+        </div>
+
+        <header>
+            <div class="search-container">
+                <input type="search" placeholder="Pesquisar Donghua" id="searchInput" aria-label="Pesquisar Donghua">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <div class="search-bottom-left"></div>
+                <div class="search-bottom-right"></div>
+            </div>
+        </header>
+
+        <!-- Featured Section -->
+        <section class="featured" aria-label="Mangás em destaque">
+            <h2>Destaques</h2>
+            <div class="featured-carousel-container">
+                <button class="carousel-control carousel-control-prev" onclick="changeSlide(-1)">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="featured-grid" id="featuredCarousel">
+                </div>
+                <button class="carousel-control carousel-control-next" onclick="changeSlide(1)">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+            <div class="carousel-dots" id="carouselDots">
+                <!-- Dots will be dynamically generated -->
+            </div>
+        </section>
+
+        <!-- Latest Updates -->
+        <section class="latest-updates" aria-label="Obras">
+            <h2>OBRAS</h2>
+            <div id="recent-donghuas" class="obras-grid">
+                <div class="obra-card">
+                    <div class="obra-image">
+                        <img src="https://source.unsplash.com/random/800x600?manga&4" alt="Obra 1">
+                        <div class="obra-overlay">
+                            <span class="obra-status obra-status-andamento">
+                                <span class="obra-status-icon">⚡</span>
+                                Em Andamento
+                            </span>
+                        </div>
+                    </div>
+                    <div class="obra-info">
+                        <h3>Título da Obra 1</h3>
+                        <p>Descrição curta da primeira obra em destaque.</p>
+                        <div class="obra-details">
+                            <span class="obra-genre">Ação</span>
+                            <span class="obra-chapters">10 Capítulos</span>
+                        </div>
+                    </div>
+                    <span class="obra-ranking">1</span>
+                    <span class="obra-crown">👑</span>
+                </div>
+
+                <div class="obra-card">
+                    <div class="obra-image">
+                        <img src="https://source.unsplash.com/random/800x600?manga&5" alt="Obra 2">
+                        <div class="obra-overlay">
+                            <span class="obra-status obra-status-novo">
+                                <span class="obra-status-icon">🔥</span>
+                                Novo
+                            </span>
+                        </div>
+                    </div>
+                    <div class="obra-info">
+                        <h3>Título da Obra 2</h3>
+                        <p>Descrição curta da segunda obra em destaque.</p>
+                        <div class="obra-details">
+                            <span class="obra-genre">Fantasia</span>
+                            <span class="obra-chapters">5 Capítulos</span>
+                        </div>
+                    </div>
+                    <span class="obra-ranking">2</span>
+                </div>
+
+                <div class="obra-card">
+                    <div class="obra-image">
+                        <img src="https://source.unsplash.com/random/800x600?manga&6" alt="Obra 3">
+                        <div class="obra-overlay">
+                            <span class="obra-status obra-status-completo">
+                                <span class="obra-status-icon">✨</span>
+                                Completo
+                            </span>
+                        </div>
+                    </div>
+                    <div class="obra-info">
+                        <h3>Título da Obra 3</h3>
+                        <p>Descrição curta da terceira obra em destaque.</p>
+                        <div class="obra-details">
+                            <span class="obra-genre">Romance</span>
+                            <span class="obra-chapters">20 Capítulos</span>
+                        </div>
+                    </div>
+                    <span class="obra-ranking">3</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Detalhes do Donghua -->
+    <div id="donghuaDetailsModal">
+        <div class="donghua-details-content">
+            <button class="close-btn" onclick="closeDonghuaDetails()">&times;</button>
+            <img id="detailsImage" src="" alt="Donghua Image">
+            <h2 id="detailsTitulo"></h2>
+            <span id="detailsStatus" class="status-badge"></span>
+            <p id="detailsDescricao"></p>
+            <div class="donghua-meta-info">
+                <p><strong>Gênero:</strong> <span id="detailsGenero"></span></p>
+                <p><strong>Capítulos:</strong> <span id="detailsCapitulos"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar cards do localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const donghuaCards = JSON.parse(localStorage.getItem('donghuaCards') || '[]');
+            const recentDonghuas = document.getElementById('recent-donghuas');
+
+            donghuaCards.slice(-20).reverse().forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('obra-card', `obra-status-${card.status.toLowerCase().replace(' ', '-')}`);
+                cardElement.innerHTML = `
+                    <div class="obra-image">
+                        <img src="${card.imagem}" alt="${card.titulo}">
+                        <div class="obra-overlay">
+                            <span class="obra-status obra-status-${card.status.toLowerCase().replace(' ', '-')}">
+                                <span class="obra-status-icon">${getStatusIcon(card.status)}</span>
+                                ${card.status}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="obra-info">
+                        <h3>${card.titulo}</h3>
+                        <p>${card.descricao}</p>
+                        <div class="obra-details">
+                            <span class="obra-genre">${card.genero}</span>
+                            <span class="obra-chapters">${card.capitulos} Capítulos</span>
+                        </div>
+                    </div>
+                    <span class="obra-ranking">${index + 1}</span>
+                    ${index === 0 ? '<span class="obra-crown">👑</span>' : ''}
+                `;
+                
+                // Adicionar evento de clique para redirecionar para menu-da-obra
+                cardElement.addEventListener('click', () => {
+                    // Salvar dados do card selecionado no localStorage
+                    localStorage.setItem('selectedDonghua', JSON.stringify(card));
+                    // Redirecionar para página de menu da obra
+                    window.location.href = 'menu-da-obra.html';
+                });
+                
+                recentDonghuas.insertBefore(cardElement, recentDonghuas.firstChild);
+            });
+        });
+
+        function getStatusIcon(status) {
+            switch(status) {
+                case 'Novo': return '🔥';
+                case 'Em Andamento': return '⚡';
+                case 'Completo': return '✨';
+                default: return '❓';
+            }
+        }
+
+        // Adicionar evento de clique para alterar resolução
+        document.getElementById('changeResolutionLink').addEventListener('click', () => {
+            const currentResolution = localStorage.getItem('resolution') || 'default';
+
+            const resolutionModal = document.createElement('div');
+            resolutionModal.id = 'resolutionModal';
+            resolutionModal.style.position = 'fixed';
+            resolutionModal.style.top = '0';
+            resolutionModal.style.left = '0';
+            resolutionModal.style.width = '100%';
+            resolutionModal.style.height = '100%';
+            resolutionModal.style.background = 'rgba(0,0,0,0.7)';
+            resolutionModal.style.display = 'flex';
+            resolutionModal.style.justifyContent = 'center';
+            resolutionModal.style.alignItems = 'center';
+            resolutionModal.style.zIndex = '1000';
+            resolutionModal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%;">
+                    <h2>Alterar Resolução do Site</h2>
+                    <p>Digite a largura desejada para o site:</p>
+                    <input type="number" id="resolutionInput" placeholder="Ex: 1220, 3000, 200" 
+                           style="width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box;"
+                           value="${currentResolution !== 'default' ? currentResolution : ''}">
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                        <button id="saveResolutionBtn" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Salvar</button>
+                        <button id="cancelResolutionBtn" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 5px;">Cancelar</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(resolutionModal);
+
+            const saveResolutionBtn = document.getElementById('saveResolutionBtn');
+            const cancelResolutionBtn = document.getElementById('cancelResolutionBtn');
+            const resolutionInput = document.getElementById('resolutionInput');
+
+            function applyResolution(resolution) {
+                // Converter para número
+                const resolutionWidth = parseInt(resolution, 10);
+
+                // Atualizar estilos globais
+                document.documentElement.style.setProperty('--site-max-width', `${resolutionWidth}px`);
+                
+                // Adicionar estilo global para máxima resolução
+                const styleElement = document.getElementById('resolution-style') || document.createElement('style');
+                styleElement.id = 'resolution-style';
+                styleElement.innerHTML = `
+                    :root {
+                        --site-max-width: ${resolutionWidth}px;
+                    }
+                    .main-content, 
+                    .site-header, 
+                    .search-container, 
+                    .featured, 
+                    .latest-updates {
+                        max-width: var(--site-max-width);
+                        width: 100%;
+                        margin-left: auto;
+                        margin-right: auto;
+                        box-sizing: border-box;
+                        padding: 0 15px;
+                    }
+                    @media (min-width: ${resolutionWidth}px) {
+                        body {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        }
+                    }
+                `;
+                document.head.appendChild(styleElement);
+
+                // Salvar no localStorage
+                localStorage.setItem('resolution', resolution);
+            }
+
+            saveResolutionBtn.addEventListener('click', () => {
+                const newResolution = resolutionInput.value.trim();
+                
+                if (newResolution && !isNaN(newResolution)) {
+                    applyResolution(newResolution);
+                    
+                    // Remover modal
+                    document.body.removeChild(resolutionModal);
+                    
+                    // Mostrar mensagem de sucesso
+                    alert(`Resolução alterada para ${newResolution}px`);
+                } else {
+                    alert('Por favor, insira um número válido para a resolução.');
+                }
+            });
+
+            cancelResolutionBtn.addEventListener('click', () => {
+                document.body.removeChild(resolutionModal);
+            });
+        });
+
+        // Aplicar resolução salva ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sempre definir resolução como 2000
+            localStorage.setItem('resolution', '2000');
+            
+            // Aplicar resolução automaticamente
+            applyResolution('2000');
+        });
+
+        // Modificar a função de seleção de resolução para definir 2000 como padrão
+        function createDeviceSelectionModal() {
+            // Código existente...
+            const resolutionInput = document.getElementById('resolutionInput');
+            
+            // Definir 2000 como valor padrão
+            resolutionInput.value = '2000';
+            
+            const saveResolutionBtn = document.getElementById('saveResolutionBtn');
+            saveResolutionBtn.addEventListener('click', () => {
+                const newResolution = resolutionInput.value.trim();
+                
+                if (newResolution && !isNaN(newResolution)) {
+                    // Salvar resolução no localStorage
+                    localStorage.setItem('resolution', newResolution);
+                    
+                    // Aplicar resolução imediatamente
+                    applyResolution(newResolution);
+                    
+                    // Fechar o modal
+                    const deviceSelectionModal = document.getElementById('deviceSelectionModal');
+                    deviceSelectionModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Função de aplicação de resolução
+        function applyResolution(resolution) {
+            // Converter resolução para número
+            const resolutionValue = parseInt(resolution, 10);
+
+            // Verificar se a resolução é válida
+            if (isNaN(resolutionValue)) {
+                console.error('Resolução inválida');
+                return;
+            }
+
+            // Aplicar estilos baseados na resolução
+            document.body.style.setProperty('--video-resolution', `${resolutionValue}px`);
+
+            // Ajustar elementos específicos
+            const videoContainer = document.querySelector('.video-container');
+            if (videoContainer) {
+                videoContainer.style.maxWidth = `${resolutionValue}px`;
+                videoContainer.style.width = '100%';
+            }
+
+            // Salvar resolução no localStorage
+            localStorage.setItem('resolution', resolution);
+
+            // Log para verificação
+            console.log(`Resolução aplicada: ${resolutionValue}px`);
+        }
+    </script>
+
+    <script>
+        // Default image URL
+        const DEFAULT_MANGA_COVER = 'https://i.pinimg.com/originals/75/90/99/7590994f96261ea1be22eb2c77effd32.jpg';
+
+        // Featured manga data with optional cover
+        const featuredManga = [
+            {
+                title: 'Demon Slayer',
+                description: 'Aventura épica de Tanjiro Kamado',
+                type: 'Shounen',
+                rating: 4.8,
+                status: 'Completo',
+                cover: '' // Will use default cover
+            },
+            {
+                title: 'Jujutsu Kaisen',
+                description: 'Batalha contra maldições sobrenaturais',
+                type: 'Shounen',
+                rating: 4.7,
+                status: 'Em Andamento',
+                cover: '' // Will use default cover
+            },
+            {
+                title: 'Chainsaw Man',
+                description: 'Mundo sombrio de caçadores de demônios',
+                type: 'Seinen',
+                rating: 4.6,
+                status: 'Completo',
+                cover: '' // Will use default cover
+            },
+            {
+                title: 'Attack on Titan',
+                description: 'Luta pela sobrevivência da humanidade',
+                type: 'Shounen',
+                rating: 4.9,
+                status: 'Completo',
+                cover: '' // Will use default cover
+            },
+            {
+                title: 'One Piece',
+                description: 'A maior aventura pirata de todos os tempos',
+                type: 'Shounen',
+                rating: 4.9,
+                status: 'Em Andamento',
+                cover: '' // Will use default cover
+            },
+            {
+                title: 'Naruto',
+                description: 'Jornada de um jovem ninja para se tornar Hokage',
+                type: 'Shounen',
+                rating: 4.7,
+                status: 'Completo',
+                cover: '' // Will use default cover
+            }
+        ];
+
+        // Function to create manga cards
+        function createMangaCards() {
+            const carousel = document.getElementById('featuredCarousel');
+            carousel.innerHTML = ''; // Clear existing cards
+
+            featuredManga.forEach((manga, index) => {
+                // Create card element
+                const card = document.createElement('div');
+                card.classList.add('obra-card');
+                card.setAttribute('data-ranking', index + 1);
+
+                // Set card HTML with default or provided cover
+                card.innerHTML = `
+                    <span class="obra-ranking">${index + 1}</span>
+                    ${index === 0 ? '<span class="obra-crown">👑</span>' : ''}
+                    <div class="obra-image">
+                        <img src="${manga.cover || DEFAULT_MANGA_COVER}" alt="${manga.title} Cover" onerror="this.src='${DEFAULT_MANGA_COVER}'">
+                        <div class="obra-status" style="background-color: ${manga.status === 'Completo' ? '#28a745' : '#ffc107'}">
+                            ${manga.status}
+                        </div>
+                    </div>
+                    <div class="obra-details">
+                        <h3>${manga.title}</h3>
+                        <p>${manga.description}</p>
+                        <div class="obra-meta">
+                            <span class="obra-type">${manga.type}</span>
+                            <span class="obra-rating">
+                                <i class="bi bi-star-fill"></i> ${manga.rating}
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                // Append card to carousel
+                carousel.appendChild(card);
+            });
+
+            // Regenerate dots after creating cards
+            generateDots();
+        }
+
+        // Create cards on page load
+        document.addEventListener('DOMContentLoaded', createMangaCards);
+    </script>
+
+    <script>
+        // Carousel functionality
+        let currentSlide = 0;
+        const carousel = document.getElementById('featuredCarousel');
+        const carouselDots = document.getElementById('carouselDots');
+        const cards = carousel.querySelectorAll('.obra-card');
+        const cardWidth = cards[0].offsetWidth + 15; // card width + gap
+
+        // Generate dots
+        function generateDots() {
+            carouselDots.innerHTML = ''; // Clear existing dots
+            cards.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('carousel-dot');
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                }
+                dot.setAttribute('data-slide', index);
+                dot.addEventListener('click', () => goToSlide(index));
+                carouselDots.appendChild(dot);
+            });
+        }
+
+        // Go to specific slide
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            
+            // Scroll to the current slide
+            carousel.scrollTo({
+                left: currentSlide * cardWidth,
+                behavior: 'smooth'
+            });
+
+            // Update active dot
+            const dots = carouselDots.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            
+            // Wrap around
+            if (currentSlide >= cards.length) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = cards.length - 1;
+
+            // Scroll to the current slide
+            carousel.scrollTo({
+                left: currentSlide * cardWidth,
+                behavior: 'smooth'
+            });
+
+            // Update dots
+            const dots = carouselDots.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Generate dots on page load
+        document.addEventListener('DOMContentLoaded', generateDots);
+
+        // Auto-rotate every 5 seconds
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    </script>
+
+    <script>
+        // Função para abrir página de capítulos de uma obra
+        function abrirPaginaCapitulos(obra) {
+            try {
+                // Limpar dados anteriores
+                localStorage.removeItem('manga_atual');
+                localStorage.removeItem('selectedCapitulo');
+
+                // Armazenar obra completa no localStorage
+                localStorage.setItem('manga_atual', JSON.stringify(obra));
+                
+                console.log('Obra selecionada:', obra);
+
+                // Redirecionar para página de capítulos
+                window.location.href = 'menu-obras.html';
+            } catch (error) {
+                console.error('Erro ao selecionar obra:', error);
+                alert('Não foi possível abrir os capítulos da obra.');
+            }
+        }
+
+        // Função para selecionar capítulo
+        function selecionarCapitulo(capitulo) {
+            try {
+                // Recuperar manga atual
+                const mangaAtual = JSON.parse(localStorage.getItem('manga_atual'));
+                
+                if (!mangaAtual) {
+                    console.error('Nenhuma obra selecionada');
+                    alert('Por favor, selecione uma obra primeiro.');
+                    return;
+                }
+
+                // Adicionar informações completas ao capítulo
+                const capituloCompleto = {
+                    ...capitulo,
+                    mangaNome: mangaAtual.nome,
+                    mangaImagem: mangaAtual.imagem
+                };
+
+                // Armazenar capítulo selecionado
+                localStorage.setItem('selectedCapitulo', JSON.stringify(capituloCompleto));
+                
+                console.log('Capítulo selecionado:', capituloCompleto);
+
+                // Redirecionar para player
+                window.location.href = 'player.html';
+            } catch (error) {
+                console.error('Erro ao selecionar capítulo:', error);
+                alert('Não foi possível selecionar o capítulo.');
+            }
+        }
+
+        // Função para carregar capítulos de uma obra
+        async function carregarCapitulosDaObra(obra) {
+            try {
+                // Limpar lista anterior
+                const listaCapitulos = document.getElementById('lista-capitulos');
+                listaCapitulos.innerHTML = '';
+
+                // Verificar se a obra tem capítulos
+                if (!obra.capitulos || obra.capitulos.length === 0) {
+                    listaCapitulos.innerHTML = '<p>Nenhum capítulo disponível</p>';
+                    return;
+                }
+
+                // Ordenar capítulos (opcional)
+                const capitulos = obra.capitulos.sort((a, b) => {
+                    const extractNumber = (cap) => {
+                        const match = cap.nome.match(/\d+/);
+                        return match ? parseInt(match[0]) : 0;
+                    };
+                    return extractNumber(a) - extractNumber(b);
+                });
+
+                // Criar elementos para cada capítulo
+                capitulos.forEach((capitulo, index) => {
+                    const itemCapitulo = document.createElement('div');
+                    itemCapitulo.classList.add('capitulo-item');
+                    itemCapitulo.innerHTML = `
+                        <span class="capitulo-nome">${capitulo.nome}</span>
+                        <button onclick='selecionarCapitulo(${JSON.stringify(capitulo).replace(/'/g, "\\'")})' class="btn-reproduzir">▶ Reproduzir</button>
+                    `;
+                    listaCapitulos.appendChild(itemCapitulo);
+                });
+
+                console.log(`Carregados ${capitulos.length} capítulos`);
+            } catch (error) {
+                console.error('Erro ao carregar capítulos:', error);
+                alert('Não foi possível carregar os capítulos.');
+            }
+        }
+
+        // Evento para carregar capítulos quando a página de menu de obras carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            const mangaAtual = JSON.parse(localStorage.getItem('manga_atual'));
+            
+            if (mangaAtual) {
+                // Atualizar título e imagem da obra
+                document.getElementById('obra-nome').textContent = mangaAtual.nome;
+                document.getElementById('obra-imagem').src = mangaAtual.imagem;
+                
+                // Carregar capítulos
+                carregarCapitulosDaObra(mangaAtual);
+            } else {
+                console.warn('Nenhuma obra selecionada');
+            }
+        });
+    </script>
+
+    <script src="script.js" defer></script>
+    <script src="menu.js" defer></script>
+    <script src="perfil.js"></script>
+    <script src="index.js"></script>
+    <script src="js/personalization.js"></script>
+</body>
+</html>

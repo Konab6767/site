@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu da Obra</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .obra-container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            color: #fff;
+        }
+
+        .obra-header-custom {
+            display: flex;
+            background-color: #121212;
+            padding: 20px;
+        }
+
+        .obra-cover-custom {
+            width: 250px;
+            margin-right: 30px;
+        }
+
+        .obra-cover-custom img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .obra-actions-custom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .obra-actions-custom .btn-favorito,
+        .obra-actions-custom .btn-compartilhar {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .obra-actions-custom .btn-favorito:hover,
+        .obra-actions-custom .btn-compartilhar:hover {
+            background-color: #444;
+        }
+
+        .obra-info-custom {
+            flex-grow: 1;
+        }
+
+        .obra-info-custom h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .obra-meta-custom {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+
+        .obra-sinopse-custom {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .obra-tags-custom {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .obra-tags-custom .tag {
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .obra-navegacao-custom {
+            display: flex;
+            background-color: #1a1a1a;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        .navegacao-capitulos {
+            flex-grow: 2;
+        }
+
+        .navegacao-capitulos h2 {
+            margin-bottom: 15px;
+        }
+
+        .capitulos-lista-custom {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .capitulo-item-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2a2a2a;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .capitulo-item-custom:hover {
+            background-color: #333;
+        }
+
+        .navegacao-extras-custom {
+            flex-grow: 1;
+        }
+
+        .estatisticas-custom,
+        .comentarios-custom {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .estatisticas-custom ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .estatisticas-custom li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comentarios-lista {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comentario-item-custom {
+            background-color: #333;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .btn-ver-todos-comentarios {
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        /* Estilos para Modal de Administrador */
+        .modal-admin-capitulos {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-admin-content {
+            background-color: #2a2a2a;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-admin-header h2 {
+            margin: 0;
+            color: #4CAF50;
+        }
+
+        .btn-fechar-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-grupo {
+            margin-bottom: 15px;
+        }
+
+        .form-grupo label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+        }
+
+        .form-grupo input,
+        .form-grupo textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .modal-admin-acoes {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-salvar {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-salvar:hover {
+            background-color: #45a049;
+        }
+
+        /* Ícone de Administrador */
+        .admin-icon-custom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: none; /* Inicialmente oculto */
+        }
+
+        .admin-icon-custom:hover {
+            transform: scale(1.1);
+            background-color: #45a049;
+        }
+
+        .admin-icon-custom i {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="obra-container-custom">
+        <div class="obra-header-custom">
+            <div class="obra-cover-custom">
+                <img src="" alt="Capa da Obra" id="obraCoverCustom">
+                <div class="obra-actions-custom">
+                    <button class="btn-favorito"><i class="fas fa-heart"></i> Favoritar</button>
+                    <button class="btn-compartilhar"><i class="fas fa-share-alt"></i> Compartilhar</button>
+                </div>
+            </div>
+            <div class="obra-info-custom">
+                <h1 id="obraTituloCustom"></h1>
+                <div class="obra-meta-custom">
+                    <span class="obra-status" id="obraStatusCustom"></span>
+                    <span class="obra-tipo" id="obraTipoCustom"></span>
+                    <span class="obra-ano" id="obraAnoCustom"></span>
+                </div>
+                <p class="obra-sinopse-custom" id="obraSinopseCustom"></p>
+                <div class="obra-tags-custom" id="obraTagsCustom">
+                    <!-- Tags serão inseridas dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div class="obra-navegacao-custom">
+            <div class="navegacao-capitulos">
+                <h2>Capítulos</h2>
+                <div class="capitulos-lista-custom" id="capitulosListaCustom">
+                    <!-- Lista de capítulos será inserida dinamicamente -->
+                </div>
+            </div>
+            <div class="navegacao-extras-custom">
+                <div class="estatisticas-custom">
+                    <h3>Estatísticas</h3>
+                    <ul>
+                        <li>
+                            <i class="fas fa-eye"></i> 
+                            <span id="estatisticaVisualizacoes">0</span> Visualizações
+                        </li>
+                        <li>
+                            <i class="fas fa-star"></i> 
+                            <span id="estatisticaAvaliacao">0.0</span> Avaliação
+                        </li>
+                        <li>
+                            <i class="fas fa-list-ol"></i> 
+                            <span id="estatisticaCapitulos">0</span> Capítulos
+                        </li>
+                    </ul>
+                </div>
+                <div class="comentarios-custom">
+                    <h3>Comentários Recentes</h3>
+                    <div class="comentarios-lista" id="comentariosListaCustom">
+                        <!-- Comentários recentes serão inseridos dinamicamente -->
+                    </div>
+                    <button class="btn-ver-todos-comentarios">Ver Todos os Comentários</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar Capítulos -->
+    <div id="modalAdicionarCapitulos" class="modal-admin-capitulos">
+        <div class="modal-admin-content">
+            <div class="modal-admin-header">
+                <h2>Adicionar Capítulo</h2>
+                <button class="btn-fechar-modal">&times;</button>
+            </div>
+            <div class="modal-admin-body">
+                <div class="form-grupo">
+                    <label for="inputNumeroCapitulo">Número do Capítulo</label>
+                    <input type="number" id="inputNumeroCapitulo" placeholder="Ex: 1">
+                </div>
+                <div class="form-grupo">
+                    <label for="inputTituloCapitulo">Título do Capítulo</label>
+                    <input type="text" id="inputTituloCapitulo" placeholder="Ex: Introdução">
+                </div>
+                <div class="form-grupo">
+                    <label for="inputDescricaoCapitulo">Descrição</label>
+                    <textarea id="inputDescricaoCapitulo" placeholder="Breve descrição do capítulo"></textarea>
+                </div>
+                <div class="form-grupo">
+                    <label for="inputLinkCapitulo">Link do Capítulo</label>
+                    <input type="url" id="inputLinkCapitulo" placeholder="URL do capítulo">
+                </div>
+                <div class="modal-admin-acoes">
+                    <button id="btnSalvarCapitulo" class="btn-salvar">Salvar Capítulo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedDonghua = JSON.parse(localStorage.getItem('selectedDonghua'));
+            const donghuaCards = JSON.parse(localStorage.getItem('donghuaCards') || '[]');
+
+            if (selectedDonghua) {
+                // Atualizar informações do donghua
+                document.getElementById('obraCoverCustom').src = selectedDonghua.imagem;
+                document.getElementById('obraTituloCustom').textContent = selectedDonghua.titulo;
+                document.getElementById('obraStatusCustom').textContent = selectedDonghua.status;
+                document.getElementById('obraTipoCustom').textContent = selectedDonghua.tipo || 'Donghua';
+                document.getElementById('obraAnoCustom').textContent = selectedDonghua.ano || 'N/A';
+                document.getElementById('obraSinopseCustom').textContent = selectedDonghua.descricao;
+
+                // Preencher tags
+                const tagsContainer = document.getElementById('obraTagsCustom');
+                if (selectedDonghua.tags) {
+                    selectedDonghua.tags.forEach(tag => {
+                        const tagElement = document.createElement('span');
+                        tagElement.classList.add('tag');
+                        tagElement.textContent = tag;
+                        tagsContainer.appendChild(tagElement);
+                    });
+                }
+
+                // Carregar capítulos se existirem
+                const capitulosLista = document.getElementById('capitulosListaCustom');
+                capitulosLista.innerHTML = ''; // Limpar lista anterior
+
+                if (selectedDonghua.listaCapitulos && selectedDonghua.listaCapitulos.length > 0) {
+                    selectedDonghua.listaCapitulos.forEach(capitulo => {
+                        const capituloItem = document.createElement('div');
+                        capituloItem.classList.add('capitulo-item-custom');
+                        capituloItem.innerHTML = `
+                            <span>${capitulo.numero} - ${capitulo.titulo}</span>
+                        `;
+                        
+                        // Tornar o capítulo clicável
+                        capituloItem.style.cursor = 'pointer';
+                        capituloItem.addEventListener('click', function() {
+                            // Salvar informações do capítulo selecionado no localStorage
+                            localStorage.setItem('selectedCapitulo', JSON.stringify({
+                                donghuaTitulo: selectedDonghua.titulo,
+                                capituloNumero: capitulo.numero,
+                                capituloTitulo: capitulo.titulo,
+                                capituloLink: capitulo.link
+                            }));
+
+                            // Redirecionar para player.html
+                            window.location.href = 'player.html';
+                        });
+
+                        capitulosLista.appendChild(capituloItem);
+                    });
+                } else {
+                    const semCapitulos = document.createElement('div');
+                    semCapitulos.textContent = 'Nenhum capítulo adicionado ainda.';
+                    semCapitulos.style.color = '#888';
+                    semCapitulos.style.textAlign = 'center';
+                    capitulosLista.appendChild(semCapitulos);
+                }
+
+                // Preencher estatísticas (valores fictícios, substituir com dados reais)
+                document.getElementById('estatisticaVisualizacoes').textContent = Math.floor(Math.random() * 10000);
+                document.getElementById('estatisticaAvaliacao').textContent = (Math.random() * 5).toFixed(1);
+                document.getElementById('estatisticaCapitulos').textContent = selectedDonghua.listaCapitulos ? selectedDonghua.listaCapitulos.length : 0;
+
+                // Preencher comentários recentes (exemplo fictício)
+                const comentariosLista = document.getElementById('comentariosListaCustom');
+                const comentariosExemplo = [
+                    { usuario: 'Usuário1', texto: 'Ótimo donghua!' },
+                    { usuario: 'Usuário2', texto: 'Estou ansioso pelo próximo capítulo.' },
+                    { usuario: 'Usuário3', texto: 'História muito interessante.' }
+                ];
+
+                comentariosExemplo.forEach(comentario => {
+                    const comentarioItem = document.createElement('div');
+                    comentarioItem.classList.add('comentario-item-custom');
+                    comentarioItem.innerHTML = `
+                        <strong>${comentario.usuario}</strong>
+                        <p>${comentario.texto}</p>
+                    `;
+                    comentariosLista.appendChild(comentarioItem);
+                });
+            } else {
+                // Se não houver donghua selecionado, redirecionar para index
+                alert('Nenhum donghua selecionado. Redirecionando para página inicial.');
+                window.location.href = 'index.html';
+            }
+
+            // Restante do código existente...
+        });
+
+        const iconAdministrador = document.createElement('div');
+        iconAdministrador.id = 'iconAdministrador';
+        iconAdministrador.className = 'admin-icon-custom';
+        iconAdministrador.innerHTML = '<i class="fas fa-user-shield"></i>';
+        iconAdministrador.style.display = 'flex'; // Forçar exibição
+        document.body.appendChild(iconAdministrador);
+
+        const modalAdicionarCapitulos = document.getElementById('modalAdicionarCapitulos');
+        const btnFecharModal = document.querySelector('.btn-fechar-modal');
+        const btnSalvarCapitulo = document.getElementById('btnSalvarCapitulo');
+
+        // Verificar se o usuário está logado
+        function verificarUsuarioLogado() {
+            try {
+                const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
+                console.log('Dados de Usuário Logado:', usuarioLogado);
+                
+                // Forçar exibição do ícone
+                if (usuarioLogado) {
+                    iconAdministrador.style.display = 'flex';
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Erro ao verificar usuário:', error);
+                return false;
+            }
+        }
+
+        // Adicionar evento de clique ao ícone
+        iconAdministrador.addEventListener('click', function() {
+            const selectedDonghua = JSON.parse(localStorage.getItem('selectedDonghua'));
+            
+            if (selectedDonghua) {
+                // Definir próximo número de capítulo automaticamente
+                const proximoNumero = selectedDonghua.listaCapitulos ? 
+                    (parseInt(selectedDonghua.listaCapitulos[selectedDonghua.listaCapitulos.length - 1].numero) + 1).toString() : 
+                    '1';
+                
+                document.getElementById('inputNumeroCapitulo').value = proximoNumero;
+                modalAdicionarCapitulos.style.display = 'flex';
+            } else {
+                alert('Selecione um donghua primeiro.');
+            }
+        });
+
+        // Chamar verificação no carregamento da página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarUsuarioLogado();
+        });
+
+        // Fechar modal
+        btnFecharModal.addEventListener('click', function() {
+            modalAdicionarCapitulos.style.display = 'none';
+        });
+
+        // Salvar capítulo
+        btnSalvarCapitulo.addEventListener('click', function() {
+            const selectedDonghua = JSON.parse(localStorage.getItem('selectedDonghua'));
+            
+            if (!selectedDonghua) {
+                alert('Selecione um donghua primeiro.');
+                return;
+            }
+
+            const numero = document.getElementById('inputNumeroCapitulo').value;
+            const titulo = document.getElementById('inputTituloCapitulo').value;
+            const descricao = document.getElementById('inputDescricaoCapitulo').value;
+            const link = document.getElementById('inputLinkCapitulo').value;
+
+            if (!numero || !titulo || !descricao || !link) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            const novoCapitulo = { numero, titulo, descricao, link };
+
+            // Adicionar capítulo à lista
+            if (!selectedDonghua.listaCapitulos) {
+                selectedDonghua.listaCapitulos = [];
+            }
+            selectedDonghua.listaCapitulos.push(novoCapitulo);
+
+            // Atualizar no localStorage
+            const donghuaCards = JSON.parse(localStorage.getItem('donghuaCards') || '[]');
+            const donghuaIndex = donghuaCards.findIndex(d => d.titulo === selectedDonghua.titulo);
+
+            if (donghuaIndex !== -1) {
+                donghuaCards[donghuaIndex] = selectedDonghua;
+                localStorage.setItem('donghuaCards', JSON.stringify(donghuaCards));
+            }
+
+            localStorage.setItem('selectedDonghua', JSON.stringify(selectedDonghua));
+
+            // Atualizar lista de capítulos na página
+            const capitulosLista = document.getElementById('capitulosListaCustom');
+            const capituloItem = document.createElement('div');
+            capituloItem.classList.add('capitulo-item-custom');
+            capituloItem.innerHTML = `
+                <span>${numero} - ${titulo}</span>
+            `;
+            
+            // Tornar o item clicável para redirecionar ao player
+            capituloItem.style.cursor = 'pointer';
+            capituloItem.addEventListener('click', function() {
+                // Salvar informações do capítulo selecionado
+                const selectedCapitulo = {
+                    donghuaTitulo: selectedDonghua.titulo,
+                    capituloNumero: numero,
+                    capituloTitulo: titulo,
+                    capituloLink: link
+                };
+                
+                localStorage.setItem('selectedCapitulo', JSON.stringify(selectedCapitulo));
+                
+                // Redirecionar para o player
+                window.location.href = 'player.html';
+            });
+
+            capitulosLista.appendChild(capituloItem);
+
+            // Limpar campos e fechar modal
+            document.getElementById('inputNumeroCapitulo').value = '';
+            document.getElementById('inputTituloCapitulo').value = '';
+            document.getElementById('inputDescricaoCapitulo').value = '';
+            document.getElementById('inputLinkCapitulo').value = '';
+
+            modalAdicionarCapitulos.style.display = 'none';
+            alert('Capítulo adicionado com sucesso!');
+
+            // Adicionar estilo para capítulos existentes
+            const existingCapitulos = capitulosLista.querySelectorAll('.capitulo-item-custom');
+            existingCapitulos.forEach(capitulo => {
+                capitulo.style.cursor = 'pointer';
+                capitulo.addEventListener('click', function() {
+                    const capituloInfo = this.querySelector('span').textContent.split(' - ');
+                    const numero = capituloInfo[0];
+                    const titulo = capituloInfo[1];
+                    
+                    // Encontrar o link do capítulo na lista de capítulos do donghua
+                    const capituloOriginal = selectedDonghua.listaCapitulos.find(
+                        cap => cap.numero == numero && cap.titulo === titulo
+                    );
+
+                    if (capituloOriginal) {
+                        const selectedCapitulo = {
+                            donghuaTitulo: selectedDonghua.titulo,
+                            capituloNumero: numero,
+                            capituloTitulo: titulo,
+                            capituloLink: capituloOriginal.link
+                        };
+                        
+                        localStorage.setItem('selectedCapitulo', JSON.stringify(selectedCapitulo));
+                        
+                        // Redirecionar para o player
+                        window.location.href = 'player.html';
+                    } else {
+                        alert('Link do capítulo não encontrado.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
